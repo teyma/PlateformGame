@@ -1,10 +1,8 @@
 package com.mydgx.game.android;
 
-import android.os.Bundle;
-
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mydgx.game.PlateformGame;
+import com.mygdx.game.PlateformGame;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override
