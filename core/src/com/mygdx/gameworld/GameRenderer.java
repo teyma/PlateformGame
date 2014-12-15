@@ -118,7 +118,9 @@ public class GameRenderer {
 		//Blocking the camera on the edges of the map
 	    if (player.getPosition().x >= camera.viewportWidth/2 && player.getPosition().x <= currentLevel.getMap().getProperties().get("width", Integer.class)-camera.viewportWidth/2){
 	    	camera.position.x = player.getPosition().x;
-	    }     
+	    }  
+	    //TOTO define this well
+	    camera.position.y = player.getPosition().y + camera.viewportHeight/8;
 		camera.update();
 	
 		renderer.render();
@@ -208,25 +210,17 @@ public class GameRenderer {
 
 		if (player.getState() == Player.State.Walking) {
 
-			playerFrame = player.isFacingRight() ? playerWalkRightAnimation
-					.getKeyFrame(player.getStateTime(), true)
-					: playerWalkLeftAnimation
-							.getKeyFrame(player.getStateTime(), true);
+			playerFrame = player.isFacingRight() ? playerWalkRightAnimation.getKeyFrame(player.getStateTime(), true)
+					: playerWalkLeftAnimation.getKeyFrame(player.getStateTime(), true);
 
 		} else if (player.getState() == Player.State.Jumping) {
-
-			playerFrame = player.isFacingRight() ? playerJumpRight
-					: playerJumpLeft;
+			playerFrame = player.isFacingRight() ? playerJumpRight : playerJumpLeft;
 
 		} else if (player.getState() == Player.State.Falling) {
-
-			playerFrame = player.isFacingRight() ? playerJumpRight
-					: playerJumpLeft;
-
+			playerFrame = player.isFacingRight() ? playerJumpRight : playerJumpLeft;
 		}
 
-		spriteBatch.draw(playerFrame, player.getPosition().x,
-				player.getPosition().y, player.getWidth(), player.getHeight());
+		spriteBatch.draw(playerFrame, player.getPosition().x, player.getPosition().y, player.getWidth(), player.getHeight());
 
 	}
 

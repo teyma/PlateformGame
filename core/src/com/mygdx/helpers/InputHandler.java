@@ -20,6 +20,8 @@ public class InputHandler implements InputProcessor {
 
 	@Override
 	public boolean keyDown(int keycode) {
+	    //TODO only state should be changed here, position/velocity/acceleration should be in the player update method 
+	    
 		// check input and apply to velocity & state
 		if (keycode == Keys.SPACE && player.isGrounded() && player.getState() != Player.State.Falling) {
 			if (!player.getState().equals(Player.State.Jumping)) {

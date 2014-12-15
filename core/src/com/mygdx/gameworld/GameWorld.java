@@ -6,8 +6,7 @@ import com.mygdx.gameobjects.Player;
 public class GameWorld {
 
 	private Player player;
-	//Will be used for transition
-	//private GameRenderer renderer;
+	private GameRenderer renderer;
 	private GameState currentState;
 	private Level currentLevel;
 
@@ -35,9 +34,9 @@ public class GameWorld {
 
 	}
 	
-	/*public void setRenderer(GameRenderer renderer) {
-	this.renderer = renderer;
-}*/
+	public void setRenderer(GameRenderer renderer) {
+	    this.renderer = renderer;
+	}
 	
 	private void updateRunning(float delta) {
 		player.update(delta, currentLevel);

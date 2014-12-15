@@ -2,7 +2,6 @@ package com.mygdx.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.mygdx.gameworld.GameRenderer;
 import com.mygdx.gameworld.GameWorld;
 import com.mygdx.helpers.InputHandler;
@@ -16,7 +15,7 @@ public class GameScreen implements Screen {
 		world = new GameWorld();
 		Gdx.input.setInputProcessor(new InputHandler(world));
 		renderer = new GameRenderer(world);
-		//world.setRenderer(renderer);
+		world.setRenderer(renderer);
 	}
 
 	@Override

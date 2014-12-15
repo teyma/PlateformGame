@@ -1,5 +1,9 @@
 package com.mygdx.gameobjects;
 
+import java.util.Map;
+
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -29,6 +33,8 @@ public class Player {
 	
 	private boolean rightKeypressed;
 	private boolean leftKeypressed;
+	
+	Rectangle playerRect;
 
 	public Player() {
 		position = new Vector2();
@@ -39,146 +45,162 @@ public class Player {
 		stateTime = 0;
 		grounded = true;
 		rightKeypressed = leftKeypressed = false;
+		
+	    Pool<Rectangle> rectPool = new Pool<Rectangle>() {
+            @Override
+            protected Rectangle newObject() {
+                return new Rectangle();
+            }
+        };
+        playerRect = rectPool.obtain();
+        playerRect.set(position.x, position.y, width, height);
 	}
 
 	/**************************************************** Getters/Setters *******************************************************/
-	public Rectangle getPlayerRect(){
-		Pool<Rectangle> rectPool = new Pool<Rectangle>() {
-			@Override
-			protected Rectangle newObject() {
-				return new Rectangle();
-			}
-		};
-		Rectangle playerRect = rectPool.obtain();
-		playerRect.set(this.getPosition().x, this.getPosition().y, this.getWidth(), this.getHeight());
-		return playerRect;
-	}
 	
 	public void update(float delta, Level level){
 		
 		// Setting x player velocity if a key was pressed
 		if(rightKeypressed && facingRight){
-			this.getVelocity().x = Player.MAX_VELOCITY;
+		    velocity.x = Player.MAX_VELOCITY;
 		}
 		if(leftKeypressed && !facingRight){
-			this.getVelocity().x = -Player.MAX_VELOCITY;
+		    velocity.x = -Player.MAX_VELOCITY;
 		}
 			
-		//Slowing down the caracter
-		this.getVelocity().x *= Player.DAMPING; 
+		//Slowing down the player
+		velocity.x *= Player.DAMPING; 
 		// clamp the velocity to 0 if it's < 1, and set the state to standing
-		if (Math.abs(this.getVelocity().x) < 1) {
-			this.getVelocity().x = 0;
-			if (this.isGrounded()) {
-				this.setState(Player.State.Standing);
+		if (Math.abs(velocity.x) < 1) {
+		    velocity.x = 0;
+			if (grounded) {
+			    state = Player.State.Standing; 
 			}
 		}
 
 		//Set player state as Falling if his y velocity is not 0
-		if (this.getState() != Player.State.Falling && this.getVelocity().y < 0) {
-			this.setState(Player.State.Falling);
-			this.setGrounded(false);
+		if (state != Player.State.Falling && velocity.y < 0) {
+			state = Player.State.Falling;
+			grounded = false;
 		}
 	
-		this.getAcceleration().y = Player.GRAVITY;
-		this.getAcceleration().scl(delta);
-		this.getVelocity().add(this.getAcceleration().x, this.getAcceleration().y);
+		acceleration.y = Player.GRAVITY;
+		acceleration.scl(delta);
+		velocity.add(acceleration.x, acceleration.y);
 
 		//scale the velocity by the frame rate
-		this.getVelocity().scl(delta);
+		velocity.scl(delta);
 
 		// perform collision detection & response, on each axis, separately
 		// if the player is moving right, check the tiles to the right of it's
 		// right bounding box edge, otherwise check the ones to the left
-		Rectangle playerRect = this.getPlayerRect(); 
 
 		int startX, startY, endX, endY;
 		if (this.getVelocity().x > 0) {
-			startX = endX = (int) (this.getPosition().x + this.getWidth() + this.getVelocity().x);
+			startX = endX = (int) (position.x + width + velocity.x);
 		} else {
-			startX = endX = (int) (this.getPosition().x + this.getVelocity().x);
+			startX = endX = (int) (position.x + velocity.x);
 		}
-		startY = (int) (this.getPosition().y);
-		endY = (int) (this.getPosition().y + this.getHeight());
+		startY = (int) (position.y);
+		endY = (int) (position.y + height);
 		
 		Array<Rectangle> tiles= level.getWallsTiles(startX, startY, endX, endY);
 
-		playerRect.x += this.getVelocity().x;
+		playerRect.x += velocity.x;
 
 		for (Rectangle tile : tiles) {
 			if (playerRect.overlaps(tile)) {
-				this.getVelocity().x = 0;
+				velocity.x = 0;
 				break;
 			}
 		}
 
-		playerRect.set(this.getPosition().x, this.getPosition().y,
-				this.getWidth(), this.getHeight());
+		playerRect.set(position.x, position.y, width, height);
 
 		// if the player is moving upwards, check the tiles to the top of it's
 		// top bounding box edge, otherwise check the ones to the bottom
-		if (this.getVelocity().y > 0) {
-			startY = endY = (int) (this.getPosition().y + this.getHeight() + this.getVelocity().y);
+		if (velocity.y > 0) {
+			startY = endY = (int) (position.y + height + velocity.y);
 		} else {
-			startY = endY = (int) (this.getPosition().y + this.getVelocity().y);
+			startY = endY = (int) (position.y + velocity.y);
 		}
 
-		startX = (int) (this.getPosition().x);
-		endX = (int) (this.getPosition().x + this.getWidth());
+		startX = (int) (position.x);
+		endX = (int) (position.x + width);
 		tiles = level.getWallsTiles(startX, startY, endX, endY);
-		playerRect.y += this.getVelocity().y;
+		playerRect.y += velocity.y;
 		for (Rectangle tile : tiles) {
 			if (playerRect.overlaps(tile)) {
 				// we actually reset the player y-position here
 				// so it is just below/above the tile we collided with
 				// this removes bouncing :)
-				if (this.getVelocity().y > 0) {
-					this.getVelocity().y = tile.y - this.getHeight();
+				if (velocity.y > 0) {
+				     velocity.y = tile.y - height;
 					// we hit a block jumping upwards, let's destroy it!
-					// TiledMapTileLayer layer = (TiledMapTileLayer)level.getMap().getLayers().get(1);
-					// layer.setCell((int)tile.x, (int)tile.y, null);
+					 TiledMapTileLayer layer = (TiledMapTileLayer)level.getMap().getLayers().get(1);
+					 layer.setCell((int)tile.x, (int)tile.y, null);
 				} else {
-					this.getPosition().y = tile.y + tile.height;
+					position.y = tile.y + tile.height;
 					// if we hit the ground, mark us as grounded so we can jump
-					this.setGrounded(true);
-					if(this.velocity.x != 0){
-						this.state = State.Walking;
+					grounded = true;
+					if(velocity.x != 0){
+						state = State.Walking;
 					} else {
-						this.state = State.Standing;
+						state = State.Standing;
 					}
 				}
-				this.getVelocity().y = 0;
+				velocity.y = 0;
 				break;
 			}
 		}
-		startX = (int) (this.getPosition().x - this.getWidth());
-		endX = (int) (this.getPosition().x + this.getWidth() * 2);
+		startX = (int) (position.x - width);
+		endX = (int) (position.x + width * 2);
 
-		startY = (int) (this.getPosition().y - this.getHeight());
-		endY = (int) (this.getPosition().y + this.getHeight() * 2);
+		startY = (int) (position.y - height);
+		endY = (int) (position.y + height * 2);
 		
-		Array<Rectangle> enemyTiles = level.getEnemyTiles(startX, startY, endX, endY);
-		for (Rectangle tile : enemyTiles) {
-			if (playerRect.overlaps(tile)) {
-				this.setPosition(new Vector2(15, 17));
-				level.getBulletList().clear();
-			}
-		}
+		Map<Rectangle,Enemy> enemyTiles = level.getEnemyTiles(startX, startY, endX, endY);    
+
+		                        
+		Rectangle intersection = new Rectangle();                  
+
+		for (Map.Entry<Rectangle, Enemy> entry : enemyTiles.entrySet()){
+		    if (playerRect.overlaps(entry.getKey())) {
+		        //let's check that the collision with the enemy is on his top 
+		        Intersector.intersectRectangles(playerRect, entry.getKey(), intersection);                               
+		        if(intersection.height<0.4) {
+		            //kill the enemy
+		            level.getEnemyList().removeValue(entry.getValue(), true);
+		            //rebound
+		            velocity.y = 0.15f;
+		        }else{ 
+		            position = new Vector2(16, 17);
+		        }                           
+		    }             
+		}		
+		
 		Array<Rectangle> bulletTiles = level.getBulletTiles(startX, startY, endX, endY);
 		for (Rectangle tile : bulletTiles) {
 			if (playerRect.overlaps(tile)) {
-				this.setPosition(new Vector2(15, 17));
+			    // the player dies
+			    position = new Vector2(16, 17);
 				level.getBulletList().clear();
 			}
 		}
-		// set the latest position and unscale the velocity by the inverse delta time
-		this.getPosition().add(this.getVelocity());
-		this.getVelocity().scl(1 / delta);
-
-		this.setStateTime(this.getStateTime() + delta);
-		this.getPosition().y += this.getVelocity().cpy().scl(delta).y;
-		if (this.getPosition().y < 0) {
-			this.setPosition(new Vector2(15, 17));
+		
+		//Prevent the player from getting out of the level by the left side
+		if(position.x < 0 && velocity.x < 0){
+		    velocity.x = 0;
+		}
+        // set the latest position and unscale the velocity by the inverse delta time
+        position.add(velocity);
+        velocity.scl(1 / delta);
+        
+		stateTime += delta;
+		position.y += velocity.cpy().scl(delta).y;
+		//The player dies here
+		if (position.y < 0) {
+			position = new Vector2(16, 17);
 		}
 		
 	}
@@ -187,9 +209,6 @@ public class Player {
 		return acceleration;
 	}
 
-	public void setAcceleration(Vector2 acceleration) {
-		this.acceleration = acceleration;
-	}
 
 	public void setHeight(float height) {
 		this.height = height;

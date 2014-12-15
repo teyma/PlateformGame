@@ -1,9 +1,12 @@
 package com.mygdx.gameobjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -67,17 +70,16 @@ public class Level {
 		return tiles;
 	}
 	
-	public Array<Rectangle> getEnemyTiles(int startX, int startY, int endX, int endY) {
+	public Map<Rectangle, Enemy> getEnemyTiles(int startX, int startY, int endX, int endY) {
 		
-		Array<Rectangle> tiles = new Array<Rectangle>();
-		
-		rectPool.freeAll(tiles);
+	    Map<Rectangle, Enemy> tiles = new HashMap<Rectangle, Enemy>();
+		//Array<Rectangle> tiles = new Array<Rectangle>();
+		//rectPool.freeAll(tiles);
 		for (Enemy enemy : enemyList) {
 			if (startX < enemy.getPosition().x && endX > enemy.getPosition().x) {
 				Rectangle rect = rectPool.obtain();
-				rect.set(enemy.getPosition().x, enemy.getPosition().y,
-						enemy.getWidth(), enemy.getHeight());
-				tiles.add(rect);
+				rect.set(enemy.getPosition().x, enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
+				tiles.put(rect,enemy);
 			}
 		}
 		
