@@ -1,27 +1,26 @@
-package com.mygdx.gameobjects;
+package com.mygdx.gameobjects.enemies;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.gameobjects.Level;
+import com.mygdx.gameobjects.Player;
 
 public class Enemy {
 	public enum State {
 		Standing, Walking, Jumping, Falling, Flying, Running
 	}
 
-	private static final float MAX_VELOCITY = 10f;
-	private static final float DAMPING = 1.6f;
-	private State state;
-	private boolean facingRight;
-	private boolean grounded;
-	private float stateTime;
-	private Vector2 position;
-	private Vector2 velocity;
-	private Vector2 acceleration;
+	protected static final float MAX_VELOCITY = 10f;
+	protected static final float DAMPING = 1.6f;
+	protected State state;
+	protected boolean facingRight;
+	protected boolean grounded;
+	protected float stateTime;
+	protected Vector2 position;
+	protected Vector2 velocity;
+	protected Vector2 acceleration;
 
-	private float width;
-	private float height;
-
-	private TextureRegion bossFrame;
+	protected float width;
+	protected float height;
 
 	public Enemy(Vector2 position) {
 		this.position = position;
@@ -34,25 +33,18 @@ public class Enemy {
 		grounded = true;
 	}
 	
+	/**
+	 * Has to be redefined TODO interface?
+	 * @param delta
+	 * @param currentLevel
+	 * @param player
+	 * @param throwProctile
+	 */
     public void updateEnemy(float delta, Level currentLevel, Player player, boolean throwProctile) {
-        if(throwProctile){
-            Projectile bullet = null;
-            // check distance and if player is behind enemy
-            if (position.x - player.getPosition().x <= 12 && position.x > player.getPosition().x) {
-                bullet = new Projectile(new Vector2(position.x, position.y + height * 0.7f));
-                bullet.setWidth(player.getWidth() / 4);
-                bullet.setHeight(player.getWidth() / 4);
-                bullet.setVelocity(new Vector2(-Player.MAX_VELOCITY-2, 0));
-                currentLevel.getEnemyProjectileList().add(bullet);
-            } 
-        }
+
     }
 
 	/**************************************************** Getters/Setters *******************************************************/
-
-	public TextureRegion getBossFrame() {
-		return bossFrame;
-	}
 
 	public Vector2 getAcceleration() {
 		return acceleration;

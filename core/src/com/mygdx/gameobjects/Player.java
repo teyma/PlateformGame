@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import com.mygdx.gameobjects.enemies.Enemy;
 
 public class Player {
 
@@ -25,9 +26,11 @@ public class Player {
 	private boolean facingRight;
 	private boolean grounded;
 	private float stateTime;
+	
 	private Vector2 position;
 	private Vector2 velocity;
 	private Vector2 acceleration;
+	
 	private float width;
 	private float height;
 	
@@ -35,6 +38,11 @@ public class Player {
 	private boolean leftKeypressed;
 	
 	Rectangle playerRect;
+	
+	
+	/**************************************************** Players stats *******************************************************/
+	
+	
 
 	public Player() {
 		position = new Vector2();

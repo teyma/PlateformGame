@@ -1,9 +1,9 @@
 package com.mygdx.gameworld;
 
-import com.mygdx.gameobjects.Enemy;
 import com.mygdx.gameobjects.Level;
 import com.mygdx.gameobjects.Player;
 import com.mygdx.gameobjects.Projectile;
+import com.mygdx.gameobjects.enemies.Enemy;
 
 public class GameWorld {
 

@@ -16,10 +16,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.gameobjects.Enemy;
 import com.mygdx.gameobjects.Level;
 import com.mygdx.gameobjects.Player;
 import com.mygdx.gameobjects.Projectile;
+import com.mygdx.gameobjects.enemies.Enemy;
+import com.mygdx.gameobjects.enemies.Shooter;
 import com.mygdx.helpers.AssetLoader;
 
 public class GameRenderer {
@@ -142,11 +143,11 @@ public class GameRenderer {
 	public Array<Enemy> loadEnemies() {
 		Array<Enemy> enemyList = new Array<Enemy>();
 		// Normal enemies
-		Enemy en1 = new Enemy(new Vector2(33, 2));
-		Enemy en2 = new Enemy(new Vector2(44, 2));
-		Enemy en3 = new Enemy(new Vector2(55, 2));
-		Enemy en4 = new Enemy(new Vector2(100, 2));
-		Enemy en5 = new Enemy(new Vector2(100, 6));
+		Shooter en1 = new Shooter(new Vector2(33, 2));
+		Shooter en2 = new Shooter(new Vector2(44, 2));
+		Shooter en3 = new Shooter(new Vector2(55, 2));
+		Shooter en4 = new Shooter(new Vector2(100, 2));
+		Shooter en5 = new Shooter(new Vector2(100, 6));
 		en1.setWidth(player.getWidth());
 		en2.setWidth(player.getWidth());
 		en3.setWidth(player.getWidth());

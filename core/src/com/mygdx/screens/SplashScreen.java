@@ -61,11 +61,10 @@ public class SplashScreen implements Screen {
 			}
 		};
 
-		//We are going to tween the sprite object using the SpriteAccessor's ALPHA tweenType. 
-		//We want this to take .8 seconds. We want you to modify the starting alpha value 
+		// We are going to tween the sprite object using the SpriteAccessor's ALPHA tweenType. 
+		// We want this to take .2 seconds. We want you to modify the starting alpha value 
 		// (this is specified in the SpriteAccessor class) to the desired target value of 1
-		Tween.to(sprite, SpriteAccessor.ALPHA, .8f).target(1)
-				.ease(TweenEquations.easeInOutQuad).repeatYoyo(1, .4f)
+		Tween.to(sprite, SpriteAccessor.ALPHA, .2f).target(1).ease(TweenEquations.easeInOutQuad).repeatYoyo(1, .4f)
 				.setCallback(cb).setCallbackTriggers(TweenCallback.COMPLETE)
 				.start(manager);
 	}
