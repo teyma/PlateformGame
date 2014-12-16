@@ -3,7 +3,11 @@ package com.mygdx.game;
 import com.badlogic.gdx.Game;
 import com.mygdx.helpers.AssetLoader;
 import com.mygdx.screens.SplashScreen;
-
+/**
+ * Main class, load assets and set the first screen of the game.
+ * @author teyma
+ *
+ */
 public class PlateformGame extends Game {
 	
 	@Override

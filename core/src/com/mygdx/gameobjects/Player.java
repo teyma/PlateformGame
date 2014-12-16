@@ -159,7 +159,7 @@ public class Player {
 		startY = (int) (position.y - height);
 		endY = (int) (position.y + height * 2);
 		
-		Map<Rectangle,Enemy> enemyTiles = level.getEnemyTiles(startX, startY, endX, endY);    
+		Map<Rectangle,Enemy> enemyTiles = level.getEnemyRectangles(startX, startY, endX, endY);    
 
 		                        
 		Rectangle intersection = new Rectangle();                  
@@ -179,12 +179,12 @@ public class Player {
 		    }             
 		}		
 		
-		Array<Rectangle> bulletTiles = level.getBulletTiles(startX, startY, endX, endY);
+		Array<Rectangle> bulletTiles = level.getProjectileRectangles(startX, startY, endX, endY);
 		for (Rectangle tile : bulletTiles) {
 			if (playerRect.overlaps(tile)) {
 			    // the player dies
 			    position = new Vector2(16, 17);
-				level.getBulletList().clear();
+				level.getEnemyProjectileList().clear();
 			}
 		}
 		

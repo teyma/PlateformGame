@@ -24,11 +24,11 @@ public class Level {
 	private float tileHeight;
 	
 	private Array<Enemy> enemyList;
-	private Array<Enemy> bulletList;
+	private Array<Projectile> enemyProjectileList;
 
 	public Level(String tilemapName) {
 		enemyList = new Array<Enemy>();
-		bulletList = new Array<Enemy>();
+		enemyProjectileList = new Array<Projectile>();
 		
 		map = new TmxMapLoader().load(tilemapName);
 		TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
@@ -70,34 +70,34 @@ public class Level {
 		return tiles;
 	}
 	
-	public Map<Rectangle, Enemy> getEnemyTiles(int startX, int startY, int endX, int endY) {
+	public Map<Rectangle, Enemy> getEnemyRectangles(int startX, int startY, int endX, int endY) {
 		
-	    Map<Rectangle, Enemy> tiles = new HashMap<Rectangle, Enemy>();
+	    Map<Rectangle, Enemy> rectangles = new HashMap<Rectangle, Enemy>();
 		//Array<Rectangle> tiles = new Array<Rectangle>();
 		//rectPool.freeAll(tiles);
 		for (Enemy enemy : enemyList) {
 			if (startX < enemy.getPosition().x && endX > enemy.getPosition().x) {
 				Rectangle rect = rectPool.obtain();
 				rect.set(enemy.getPosition().x, enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
-				tiles.put(rect,enemy);
+				rectangles.put(rect,enemy);
 			}
 		}
 		
-		return tiles;
+		return rectangles;
 	}
 
-	public Array<Rectangle> getBulletTiles(int startX, int startY, int endX, int endY) {
-		Array<Rectangle> tiles = new Array<Rectangle>();
+	public Array<Rectangle> getProjectileRectangles(int startX, int startY, int endX, int endY) {
+		Array<Rectangle> rectangles = new Array<Rectangle>();
 		
-		for (Enemy enemy : bulletList) {
-			if (startX < enemy.getPosition().x && endX > enemy.getPosition().x) {
+		for (Projectile projectile : enemyProjectileList) {
+			if (startX < projectile.getPosition().x && endX > projectile.getPosition().x) {
 				Rectangle rect = rectPool.obtain();
-				rect.set(enemy.getPosition().x, enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
-				tiles.add(rect);
+				rect.set(projectile.getPosition().x, projectile.getPosition().y, projectile.getWidth(), projectile.getHeight());
+				rectangles.add(rect);
 			}
 		}
 		
-		return tiles;
+		return rectangles;
 	}
 	public TiledMap getMap() {
 		return map;
@@ -119,13 +119,12 @@ public class Level {
 		this.enemyList = enemyList;
 	}
 
-	public Array<Enemy> getBulletList() {
-		return bulletList;
-	}
+    public Array<Projectile> getEnemyProjectileList() {
+        return enemyProjectileList;
+    }
 
-	public void setBulletList(Array<Enemy> bulletList) {
-		this.bulletList = bulletList;
-	}
-	
-	
+    public void setEnemyProjectileList(Array<Projectile> enemyProjectileList) {
+        this.enemyProjectileList = enemyProjectileList;
+    }
+
 }

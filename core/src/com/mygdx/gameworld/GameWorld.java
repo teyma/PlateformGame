@@ -1,7 +1,9 @@
 package com.mygdx.gameworld;
 
+import com.mygdx.gameobjects.Enemy;
 import com.mygdx.gameobjects.Level;
 import com.mygdx.gameobjects.Player;
+import com.mygdx.gameobjects.Projectile;
 
 public class GameWorld {
 
@@ -9,6 +11,9 @@ public class GameWorld {
 	private GameRenderer renderer;
 	private GameState currentState;
 	private Level currentLevel;
+	
+	//Not sure if it's the right place for this
+	private float timer;
 
 	public enum GameState {
 		MENU, READY, RUNNING, GAMEOVER, HIGHSCORE
@@ -18,6 +23,8 @@ public class GameWorld {
 		currentState = GameState.MENU;
 		player = new Player();
 		currentLevel = new Level("level1.tmx");
+		
+	    timer = 0f;
 	}
 
 	public void update(float delta) {
@@ -39,6 +46,24 @@ public class GameWorld {
 	}
 	
 	private void updateRunning(float delta) {
+	    boolean throwProctile = false;
+        timer += delta;
+        if (timer >= 1f) {
+            throwProctile = true;
+            timer -= 1f;
+        }
+	        
+	    //Updating all enemies
+        for(Enemy enemy : currentLevel.getEnemyList()){
+            enemy.updateEnemy(delta, currentLevel, player, throwProctile);
+        } 
+        
+	    //Updating all bullets threw by enemies
+        for(Projectile bullet : currentLevel.getEnemyProjectileList()){
+            bullet.updateProjectile(delta, currentLevel);
+        } 
+        
+        //Finally update the player
 		player.update(delta, currentLevel);
 	}
 

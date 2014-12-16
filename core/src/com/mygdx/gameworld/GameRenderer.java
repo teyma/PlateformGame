@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.gameobjects.Enemy;
 import com.mygdx.gameobjects.Level;
 import com.mygdx.gameobjects.Player;
+import com.mygdx.gameobjects.Projectile;
 import com.mygdx.helpers.AssetLoader;
 
 public class GameRenderer {
@@ -50,8 +51,6 @@ public class GameRenderer {
 	/* for debug rendering */
 	ShapeRenderer debugRenderer;
 	
-	float timer = 0f;
-	int time = 0;
 	int score;
 	private Stage stage;
 	private Label label;
@@ -102,15 +101,7 @@ public class GameRenderer {
 		
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		updateBullets(delta);
-		timer += delta;
-		if (timer >= 1f) {
-			updateEnemy(delta);
-			time++;
-			timer -= 1f;
-		}
-		
+			
 		debugRenderer.setProjectionMatrix(camera.combined);
 
 		renderer.setView(camera);
@@ -119,7 +110,7 @@ public class GameRenderer {
 	    if (player.getPosition().x >= camera.viewportWidth/2 && player.getPosition().x <= currentLevel.getMap().getProperties().get("width", Integer.class)-camera.viewportWidth/2){
 	    	camera.position.x = player.getPosition().x;
 	    }  
-	    //TOTO define this well
+	    //TODO define this well
 	    camera.position.y = player.getPosition().y + camera.viewportHeight/8;
 		camera.update();
 	
@@ -132,35 +123,6 @@ public class GameRenderer {
 		drawDebug();
 
 		stage.draw();
-	}
-
-	
-	public void updateEnemy(float delta) {
-		Enemy bullet = null;
-		for (Enemy enemy : currentLevel.getEnemyList()) {
-			// check distance and if player is behind enemy
-			if (enemy.getPosition().x - player.getPosition().x <= 12 && enemy.getPosition().x > player.getPosition().x) {
-				bullet = new Enemy(new Vector2(enemy.getPosition().x, enemy.getPosition().y + enemy.getHeight() * 0.7f));
-				bullet.setWidth(player.getWidth() / 4);
-				bullet.setHeight(player.getWidth() / 4);
-				bullet.setVelocity(new Vector2(-Player.MAX_VELOCITY-2, 0));
-				currentLevel.getBulletList().add(bullet);
-			}
-		}
-	}
-
-	private void updateBullets(float delta) {
-		Array<Enemy> bulletsToRemove = new Array<Enemy>();
-		for (Enemy bullet : currentLevel.getBulletList()) {
-			if (bullet.getPosition().x < 0) {
-				bulletsToRemove.add(bullet);
-			} else {
-				bullet.getVelocity().scl(delta);
-				bullet.getPosition().add(bullet.getVelocity());
-				bullet.getVelocity().scl(1 / delta);
-			}
-		}
-		currentLevel.getBulletList().removeAll(bulletsToRemove, false);
 	}
 
 	private void loadPlayerTextures() {
@@ -232,9 +194,8 @@ public class GameRenderer {
 	}
 
 	public void drawBullets() {
-		for (Enemy enemy : currentLevel.getBulletList()) {
-			spriteBatch.draw(bulletFrame, enemy.getPosition().x,
-					enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
+		for (Projectile enemy : currentLevel.getEnemyProjectileList()) {
+			spriteBatch.draw(bulletFrame, enemy.getPosition().x, enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
 		}
 	}
 
