@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.mygdx.gameobjects.enemies.Enemy;
@@ -24,10 +25,12 @@ public class Level {
 	private float tileWidth;
 	private float tileHeight;
 	
+	private Vector2 playerSpawnPosition;
+	
 	private Array<Enemy> enemyList;
 	private Array<Projectile> enemyProjectileList;
 
-	public Level(String tilemapName) {
+	public Level(String tilemapName, Vector2 playerSpawnPosition) {
 		enemyList = new Array<Enemy>();
 		enemyProjectileList = new Array<Projectile>();
 		
@@ -35,6 +38,8 @@ public class Level {
 		TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
 		tileWidth = layer.getTileWidth();
 		tileHeight = layer.getTileHeight();
+		
+		this.playerSpawnPosition = playerSpawnPosition;
 	}
 
 	private Pool<Rectangle> rectPool = new Pool<Rectangle>() {
@@ -87,19 +92,23 @@ public class Level {
 		return rectangles;
 	}
 
-	public Array<Rectangle> getProjectileRectangles(int startX, int startY, int endX, int endY) {
-		Array<Rectangle> rectangles = new Array<Rectangle>();
+	public Map<Rectangle, Projectile> getProjectileRectangles(int startX, int startY, int endX, int endY) {
+	    Map<Rectangle, Projectile> rectangles = new HashMap<Rectangle, Projectile>();
 		
 		for (Projectile projectile : enemyProjectileList) {
 			if (startX < projectile.getPosition().x && endX > projectile.getPosition().x) {
 				Rectangle rect = rectPool.obtain();
 				rect.set(projectile.getPosition().x, projectile.getPosition().y, projectile.getWidth(), projectile.getHeight());
-				rectangles.add(rect);
+				rectangles.put(rect, projectile);
 			}
 		}
-		
 		return rectangles;
 	}
+	
+	public void restart(){
+	    enemyProjectileList = new Array<Projectile>();
+	}
+	
 	public TiledMap getMap() {
 		return map;
 	}
@@ -128,4 +137,11 @@ public class Level {
         this.enemyProjectileList = enemyProjectileList;
     }
 
+    /**
+     * Returning a copy of the vector, IMPORTANT
+     * @return
+     */
+    public Vector2 getPlayerSpawnPosition() {
+        return playerSpawnPosition.cpy();
+    }
 }

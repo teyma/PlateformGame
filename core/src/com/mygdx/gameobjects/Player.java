@@ -40,10 +40,12 @@ public class Player {
 	Rectangle playerRect;
 	
 	
+	private boolean dead;
 	/**************************************************** Players stats *******************************************************/
+	private int maximumLife;
+	private float currentLife;
 	
 	
-
 	public Player() {
 		position = new Vector2();
 		velocity = new Vector2();
@@ -53,6 +55,10 @@ public class Player {
 		stateTime = 0;
 		grounded = true;
 		rightKeypressed = leftKeypressed = false;
+		
+		dead = false;
+		maximumLife = 3;
+		currentLife = (float)maximumLife;
 		
 	    Pool<Rectangle> rectPool = new Pool<Rectangle>() {
             @Override
@@ -167,14 +173,13 @@ public class Player {
 		startY = (int) (position.y - height);
 		endY = (int) (position.y + height * 2);
 		
-		Map<Rectangle,Enemy> enemyTiles = level.getEnemyRectangles(startX, startY, endX, endY);    
-
+		Map<Rectangle,Enemy> enemyRectangles = level.getEnemyRectangles(startX, startY, endX, endY);    
 		                        
 		Rectangle intersection = new Rectangle();                  
 
-		for (Map.Entry<Rectangle, Enemy> entry : enemyTiles.entrySet()){
+		for (Map.Entry<Rectangle, Enemy> entry : enemyRectangles.entrySet()){
 		    if (playerRect.overlaps(entry.getKey())) {
-		        //let's check that the collision with the enemy is on his top 
+		        //let's check that the collision with the enemy is on its top 
 		        Intersector.intersectRectangles(playerRect, entry.getKey(), intersection);                               
 		        if(intersection.height<0.4) {
 		            //kill the enemy
@@ -182,17 +187,17 @@ public class Player {
 		            //rebound
 		            velocity.y = 0.15f;
 		        }else{ 
-		            position = new Vector2(16, 17);
+		            removeLife(0.5f);
 		        }                           
 		    }             
 		}		
 		
-		Array<Rectangle> bulletTiles = level.getProjectileRectangles(startX, startY, endX, endY);
-		for (Rectangle tile : bulletTiles) {
-			if (playerRect.overlaps(tile)) {
-			    // the player dies
-			    position = new Vector2(16, 17);
-				level.getEnemyProjectileList().clear();
+		Map<Rectangle,Projectile> bulletRectangles = level.getProjectileRectangles(startX, startY, endX, endY);
+		for (Map.Entry<Rectangle, Projectile> entry : bulletRectangles.entrySet()) {
+			if (playerRect.overlaps(entry.getKey())) {
+			    
+			    removeLife(0.5f);
+			    level.getEnemyProjectileList().removeValue(entry.getValue(), true);
 			}
 		}
 		
@@ -208,10 +213,31 @@ public class Player {
 		position.y += velocity.cpy().scl(delta).y;
 		//The player dies here
 		if (position.y < 0) {
-			position = new Vector2(16, 17);
+			dead = true;
 		}
 		
 	}
+	
+	private void removeLife(float value){
+	    currentLife -= value;
+	    if(currentLife <= 0){
+	        dead=true;
+	    }
+	}
+	
+	/**
+	 * Re intitialize player
+	 * @param position
+	 */
+	public void restart(Vector2 spawnPosition){
+	    dead = false;
+	    position = spawnPosition;
+	    acceleration = new Vector2();
+	    velocity = new Vector2();
+	    currentLife = maximumLife;
+	}
+	
+	/**************************************************** Getters/Setters *******************************************************/
 	
 	public Vector2 getAcceleration() {
 		return acceleration;
@@ -297,4 +323,24 @@ public class Player {
 	public void setLeftKeypressed(boolean leftKeypressed) {
 		this.leftKeypressed = leftKeypressed;
 	}
+
+    public int getMaximumLife() {
+        return maximumLife;
+    }
+
+    public void setMaximumLife(int maximumLife) {
+        this.maximumLife = maximumLife;
+    }
+
+    public float getCurrentLife() {
+        return currentLife;
+    }
+
+    public void setCurrentLife(float currentLife) {
+        this.currentLife = currentLife;
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
 }

@@ -1,5 +1,6 @@
 package com.mygdx.gameworld;
 
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.gameobjects.Level;
 import com.mygdx.gameobjects.Player;
 import com.mygdx.gameobjects.Projectile;
@@ -22,7 +23,7 @@ public class GameWorld {
 	public GameWorld() {
 		currentState = GameState.MENU;
 		player = new Player();
-		currentLevel = new Level("level1.tmx");
+		currentLevel = new Level("level1.tmx", new Vector2(16, 17));
 		
 	    timer = 0f;
 	}
@@ -33,6 +34,7 @@ public class GameWorld {
 		case READY:
 		case MENU:
 		case RUNNING:
+		    System.out.println("run " + currentLevel.getPlayerSpawnPosition());
 			updateRunning(delta);
 			break;
 		default:
@@ -46,16 +48,17 @@ public class GameWorld {
 	}
 	
 	private void updateRunning(float delta) {
-	    boolean throwProctile = false;
+	    // projectile are thrown each second
+	    boolean throwProjectile = false;
         timer += delta;
         if (timer >= 1f) {
-            throwProctile = true;
+            throwProjectile = true;
             timer -= 1f;
         }
 	        
 	    //Updating all enemies
         for(Enemy enemy : currentLevel.getEnemyList()){
-            enemy.updateEnemy(delta, currentLevel, player, throwProctile);
+            enemy.updateEnemy(delta, currentLevel, player, throwProjectile);
         } 
         
 	    //Updating all bullets threw by enemies
@@ -65,7 +68,20 @@ public class GameWorld {
         
         //Finally update the player
 		player.update(delta, currentLevel);
+		
+		//Checking for player's status
+		if(player.isDead()){
+		    currentState = GameState.GAMEOVER;
+		}
 	}
+	
+	   
+    public void restart() {
+        currentLevel.restart();
+        player.restart(currentLevel.getPlayerSpawnPosition());
+        //running the game
+        start();
+    }
 
 	public void start() {
 		currentState = GameState.RUNNING;

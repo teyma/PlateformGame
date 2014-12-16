@@ -20,11 +20,16 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		//workaround for when the window is draged
-		if(delta < 0.1){
-			world.update(delta);
-			renderer.render(delta);
-		}
+	    if(world.isGameOver()){
+	        world.restart();
+	        
+	    } else {
+	        //workaround for when the window is draged
+	        if(delta < 0.15f){
+	            world.update(delta);
+	            renderer.render(delta);
+	        }
+	    }
 	}
 
 	@Override

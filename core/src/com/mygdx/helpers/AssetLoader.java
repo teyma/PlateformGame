@@ -15,7 +15,7 @@ public class AssetLoader {
 	public static Texture texture, logoTexture;
 	
 	public static TextureRegion logo, playerIdleLeft, playerIdleRight, playerJumpLeft, 
-								playerJumpRight, enemyFrame,bulletFrame, playerFrame;
+								playerJumpRight, enemyFrame,bulletFrame, playerFrame, fullHeart, halfHeart, emptyHeart;
 
 	public static Animation playerWalkLeftAnimation, playerWalkRightAnimation;
 	
@@ -58,6 +58,10 @@ public class AssetLoader {
 		enemyFrame = new TextureRegion(new Texture("shooter.png"));
 		enemyFrame.flip(true, false);
 		bulletFrame = new TextureRegion(new Texture("bullet.png"));
+		
+		halfHeart = new TextureRegion(new Texture("halfHeart.jpg"));
+		fullHeart = new TextureRegion(new Texture("fullHeart.jpg"));
+		emptyHeart = new TextureRegion(new Texture("emptyHeart.jpg"));
 
 		// Create (or retrieve existing) preferences file
 		/*prefs = Gdx.app.getPreferences("ZombieBird");

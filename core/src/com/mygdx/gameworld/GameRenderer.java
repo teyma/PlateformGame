@@ -8,12 +8,15 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.gameobjects.Level;
@@ -34,7 +37,8 @@ public class GameRenderer {
 	private Level currentLevel;
 	private Player player;
 
-	private Batch spriteBatch;
+	private Batch spriteBatch;	
+    private Batch hudBatch;  	
 
 	/* Textures for Player */
 	private TextureRegion playerIdleLeft;
@@ -44,6 +48,10 @@ public class GameRenderer {
 	private TextureRegion enemyFrame;
 	private TextureRegion bulletFrame;
 	private TextureRegion playerFrame;
+	
+	private TextureRegion fullHeart;
+	private TextureRegion halfHeart;
+	private TextureRegion emptyHeart;
 	
 	/* Animations for Player */
 	private Animation playerWalkLeftAnimation;
@@ -62,6 +70,10 @@ public class GameRenderer {
 	 */
 	public GameRenderer(GameWorld world) {
 		myWorld = world;
+
+        loadPlayerTextures();
+        loadEnemiesTexture();
+        loadHUDTextures();
 		
 		//Score 
 		score = 0;
@@ -75,10 +87,7 @@ public class GameRenderer {
 		currentLevel = world.getCurrentLevel();
 		player = world.getPlayer();
 
-		loadPlayerTextures();
-		loadEnemiesTexture();
-
-		player.setPosition(new Vector2(15, 17));
+		player.setPosition(currentLevel.getPlayerSpawnPosition());
 		player.setWidth(UNIT_SCALE * playerIdleRight.getRegionWidth());
 		player.setHeight(UNIT_SCALE * playerIdleRight.getRegionHeight());
 
@@ -86,12 +95,18 @@ public class GameRenderer {
 		
 		renderer = new OrthogonalTiledMapRenderer(currentLevel.getMap(), UNIT_SCALE);
 		spriteBatch = renderer.getBatch();
+		
 		debugRenderer = new ShapeRenderer();
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 30, 20);
 		camera.update();
-
+		
+		//TODO Dirty way
+        hudBatch = new SpriteBatch();
+        Matrix4 uiMatrix = camera.combined.cpy();
+        uiMatrix.setToOrtho2D(0, 0, 30, 20);
+        hudBatch.setProjectionMatrix(uiMatrix);
 	}
 
 	/**
@@ -121,8 +136,17 @@ public class GameRenderer {
 		drawEnemies();
 		drawBullets();
 		spriteBatch.end();
+		
+        hudBatch.begin();
+        drawHUD();
+        hudBatch.end();
+	        
 		drawDebug();
-
+		
+		
+		/*score++;
+		label.setText("Score : " + score);*/
+		
 		stage.draw();
 	}
 
@@ -139,7 +163,13 @@ public class GameRenderer {
 		enemyFrame = AssetLoader.enemyFrame;
 		bulletFrame = AssetLoader.bulletFrame;
 	}
-
+	
+    private void loadHUDTextures(){
+        fullHeart = AssetLoader.fullHeart;
+        halfHeart = AssetLoader.halfHeart;
+        emptyHeart = AssetLoader.emptyHeart;
+    }
+	
 	public Array<Enemy> loadEnemies() {
 		Array<Enemy> enemyList = new Array<Enemy>();
 		// Normal enemies
@@ -199,6 +229,25 @@ public class GameRenderer {
 			spriteBatch.draw(bulletFrame, enemy.getPosition().x, enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
 		}
 	}
+	
+	/**
+	 * HUD (Heads-Up Display)
+	 */
+    public void drawHUD() {
+        //Draw players life
+        float playerCurrentLife = player.getCurrentLife();
+        int heartWidth = fullHeart.getRegionWidth();
+        int heartHeight = fullHeart.getRegionHeight();
+        for (int i = 1; i <= player.getMaximumLife(); i++) {
+           if(playerCurrentLife >= i){
+               hudBatch.draw(fullHeart,  15 + heartWidth/30 * i, 18, heartWidth/30, heartHeight/30);
+           }else if(playerCurrentLife < i && playerCurrentLife > i-1){
+               hudBatch.draw(halfHeart,  15 + heartWidth/30 * i, 18, heartWidth/30, heartHeight/30);
+           }else{
+               hudBatch.draw(emptyHeart,  15 + heartWidth/30 * i, 18, heartWidth/30, heartHeight/30);
+           }
+        }
+    }
 
 	/**
 	 * Rectangle around the player for debug purpose
