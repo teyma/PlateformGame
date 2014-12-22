@@ -1,12 +1,9 @@
 package com.mygdx.helpers;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -15,7 +12,7 @@ public class AssetLoader {
 	public static Texture texture, logoTexture;
 	
 	public static TextureRegion logo, playerIdleLeft, playerIdleRight, playerJumpLeft, 
-								playerJumpRight, enemyFrame,bulletFrame, playerFrame, fullHeart, halfHeart, emptyHeart;
+								playerJumpRight, enemyFrame,bulletFrame, shieldFrame, playerFrame, fullHeart, halfHeart, emptyHeart;
 
 	public static Animation playerWalkLeftAnimation, playerWalkRightAnimation;
 	
@@ -58,6 +55,7 @@ public class AssetLoader {
 		enemyFrame = new TextureRegion(new Texture("shooter.png"));
 		enemyFrame.flip(true, false);
 		bulletFrame = new TextureRegion(new Texture("bullet.png"));
+		shieldFrame = new TextureRegion(new Texture("shield.png"));
 		
 		halfHeart = new TextureRegion(new Texture("halfHeart.jpg"));
 		fullHeart = new TextureRegion(new Texture("fullHeart.jpg"));

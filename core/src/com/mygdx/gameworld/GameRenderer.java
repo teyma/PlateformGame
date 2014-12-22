@@ -47,6 +47,8 @@ public class GameRenderer {
 	private TextureRegion playerJumpRight;
 	private TextureRegion enemyFrame;
 	private TextureRegion bulletFrame;
+	private TextureRegion attackFrame;
+	private TextureRegion shieldFrame;
 	private TextureRegion playerFrame;
 	
 	private TextureRegion fullHeart;
@@ -135,6 +137,8 @@ public class GameRenderer {
 		drawPlayer();
 		drawEnemies();
 		drawBullets();
+		drawShield();
+		drawAttack();
 		spriteBatch.end();
 		
         hudBatch.begin();
@@ -157,6 +161,8 @@ public class GameRenderer {
 	    playerWalkRightAnimation = AssetLoader.playerWalkRightAnimation;
 		playerJumpLeft = AssetLoader. playerJumpLeft;
 		playerJumpRight = AssetLoader.playerJumpRight;
+		attackFrame = AssetLoader.bulletFrame;
+		shieldFrame = AssetLoader.shieldFrame;
 	}
 	
 	private void loadEnemiesTexture(){
@@ -227,6 +233,23 @@ public class GameRenderer {
 	public void drawBullets() {
 		for (Projectile enemy : currentLevel.getEnemyProjectileList()) {
 			spriteBatch.draw(bulletFrame, enemy.getPosition().x, enemy.getPosition().y, enemy.getWidth(), enemy.getHeight());
+		}
+	}
+	
+	public void drawAttack() {
+		if (player.getAttack()) {
+			if (player.isFacingRight()) {
+				spriteBatch.draw(attackFrame, player.getPosition().x+player.getWidth(), player.getPosition().y, player.getWidth(), player.getHeight());
+			} else {
+				spriteBatch.draw(attackFrame, player.getPosition().x-player.getWidth(), player.getPosition().y, player.getWidth(), player.getHeight());
+			}
+			player.setAttack(false);
+		}
+	}
+
+	public void drawShield() {
+		if (player.getShield().isActive()) {
+			spriteBatch.draw(shieldFrame, player.getShield().getPosition().x, player.getShield().getPosition().y, player.getWidth(), player.getHeight());
 		}
 	}
 	

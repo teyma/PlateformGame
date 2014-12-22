@@ -56,6 +56,11 @@ public class InputHandler implements InputProcessor {
 				player.setState(Player.State.Walking);
 			}
 		}	
+		
+		if (keycode == Keys.CONTROL_RIGHT) {
+		    player.shield();
+		}
+		
 		return true;
 	}
 
@@ -75,7 +80,16 @@ public class InputHandler implements InputProcessor {
 			player.getVelocity().add(player.getAcceleration().x, player.getAcceleration().y);
 			player.setState(Player.State.Falling);
 			jumpingPressed = false;
+		}		
+
+	    if (keycode == Keys.CONTROL_RIGHT) {
+	    	player.unshield();
+		}	
+
+	    if (keycode == Keys.A) {
+	    	player.attack();
 		}
+	    
 		return true;
 	}
 
