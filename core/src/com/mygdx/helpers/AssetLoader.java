@@ -55,7 +55,7 @@ public class AssetLoader {
 		enemyFrame = new TextureRegion(new Texture("shooter.png"));
 		enemyFrame.flip(true, false);
 		bulletFrame = new TextureRegion(new Texture("bullet.png"));
-		shieldFrame = new TextureRegion(new Texture("shield.png"));
+		shieldFrame = new TextureRegion(new Texture("fullHeart.jpg"));
 		
 		halfHeart = new TextureRegion(new Texture("halfHeart.jpg"));
 		fullHeart = new TextureRegion(new Texture("fullHeart.jpg"));
